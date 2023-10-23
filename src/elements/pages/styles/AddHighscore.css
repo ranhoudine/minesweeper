@@ -1,0 +1,14 @@
+.AddHighscore {
+    display: flex;
+    flex-direction: column;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+button {
+    width: fit-content;
+    margin-top: 10px;
+}

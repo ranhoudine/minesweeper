@@ -1,0 +1,20 @@
+.Home {
+    display: flex;
+    flex-direction: column;
+    margin-top: 30px;
+    align-items: center;
+}
+
+.ButtonDemo {
+    height: 20px;
+    width: 20px;
+    color: rgb(134, 182, 241);
+    
+}
+
+.PlayButton {
+    background-color: rgb(243, 239, 239);
+    padding: 8px;
+    margin-top:50px;
+    text-decoration: none;
+}

@@ -1,0 +1,9 @@
+.Row {
+    display: flex;
+}
+
+.Board {
+    min-height: fit-content;
+    min-width: fit-content;
+    border: 1px solid lightgray;
+}

@@ -1,0 +1,9 @@
+.Game {
+    min-height: fit-content;
+    text-align: center;
+    margin-top: 20px;
+}
+
+.SaveScore {
+    background-color: rgba(237, 247, 255, 0.984);
+}
