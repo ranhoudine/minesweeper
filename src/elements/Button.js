@@ -40,7 +40,7 @@ export default function Button({ hasMine, buttonIndex, leftClickHandler, gameArr
         onMouseLeave={() => { setIsMouseOver(false) }}
         onContextMenu={rightClick}
         style={getBackgroundColor()}> 
-            {(isRevealed && numSurroundingMines > 0 && !hasMine)? numSurroundingMines : ''}
+            {(isRevealed && numSurroundingMines > 0 && !hasMine && !flagged)? numSurroundingMines : ''}
     </div>;
 }
 

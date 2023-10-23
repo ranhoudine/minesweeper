@@ -1,6 +1,6 @@
 
 
-module.exports = class Queue {
+export default class Queue {
     constructor() {
         this.items = {}
         this.frontIndex = 0
