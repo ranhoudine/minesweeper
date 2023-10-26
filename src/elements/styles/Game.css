@@ -1,9 +1,15 @@
 .Game {
+    display: flex;
+    flex-direction: column;
     min-height: fit-content;
     text-align: center;
+    align-items: center;
     margin-top: 20px;
 }
 
 .SaveScore {
-    background-color: rgba(237, 247, 255, 0.984);
+    color: rgb(158, 158, 160);
+    width: fit-content;
+    cursor: pointer;
+    margin-bottom: 10px;
 }

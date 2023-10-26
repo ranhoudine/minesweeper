@@ -69,67 +69,67 @@ function revealNeighboringTiles(board, i, j) {
     }
     totalRevealedTiles += numberOfRevealedTiles
 
-    return [board, totalRevealedTiles]
-
-
-
+    return totalRevealedTiles
 }
 
 function calculateSurroundingMines(board, buttonIndex) {
+    const tileHasMine = (row, col) => board[row][col].hasMine
     let [row, col] = get2DIndex(buttonIndex, BOARD_SIZE)
     let numSurroundingMines = 0
-    if (row > 0 && col > 0 && board[row - 1][col - 1].hasMine) {
+    if (row > 0 && col > 0 && tileHasMine(row - 1, col - 1)) {
         numSurroundingMines++
     }
-    if (row > 0 && board[row - 1][col].hasMine) {
+    if (row > 0 && tileHasMine(row - 1, col)) {
         numSurroundingMines++
     }
-    if (row > 0 && col < BOARD_SIZE - 1 && board[row - 1][col + 1].hasMine) {
+    if (row > 0 && col < BOARD_SIZE - 1 && tileHasMine(row - 1, col + 1)) {
         numSurroundingMines++
     }
-    if (row < BOARD_SIZE - 1 && col > 0 && board[row + 1][col - 1].hasMine) {
+    if (row < BOARD_SIZE - 1 && col > 0 && tileHasMine(row + 1, col - 1)) {
         numSurroundingMines++
     }
-    if (row < BOARD_SIZE - 1 && board[row + 1][col].hasMine) {
+    if (row < BOARD_SIZE - 1 && tileHasMine(row + 1, col)) {
         numSurroundingMines++
     }
-    if (row < BOARD_SIZE - 1 && col < BOARD_SIZE - 1 && board[row + 1][col + 1].hasMine) {
+    if (row < BOARD_SIZE - 1 && col < BOARD_SIZE - 1 && tileHasMine(row + 1, col + 1)) {
         numSurroundingMines++
     }
-    if (col > 0 && board[row][col - 1].hasMine) {
+    if (col > 0 && tileHasMine(row, col - 1)) {
         numSurroundingMines++
     }
-    if (col < BOARD_SIZE - 1 && board[row][col + 1].hasMine) {
+    if (col < BOARD_SIZE - 1 && tileHasMine(row, col + 1)) {
         numSurroundingMines++
     }
     return numSurroundingMines
 }
 
 function calculateSurroundingFlags(board, buttonIndex) {
+
+    const isFlagged = (row, col) => board[row][col].isFlagged
     let [row, col] = get2DIndex(buttonIndex, BOARD_SIZE)
     let numSurroundingFlags = 0
-    if (row > 0 && col > 0 && board[row - 1][col - 1].isFlagged) {
+    if (row > 0 && col > 0 && isFlagged(row - 1, col - 1)) {
         numSurroundingFlags++
     }
-    if (row > 0 && board[row - 1][col].isFlagged) {
+    if (row > 0 && isFlagged(row - 1, col)) {
         numSurroundingFlags++
     }
-    if (row > 0 && col < BOARD_SIZE - 1 && board[row - 1][col + 1].isFlagged) {
+    if (row > 0 && col < BOARD_SIZE - 1 && isFlagged(row - 1, col + 1)) {
         numSurroundingFlags++
     }
-    if (row < BOARD_SIZE - 1 && col > 0 && board[row + 1][col - 1].isFlagged) {
+    if (row < BOARD_SIZE - 1 && col > 0 && isFlagged(row + 1, col - 1)) {
         numSurroundingFlags++
     }
-    if (row < BOARD_SIZE - 1 && board[row + 1][col].isFlagged) {
+    if (row < BOARD_SIZE - 1 && isFlagged(row + 1, col)) {
         numSurroundingFlags++
     }
-    if (row < BOARD_SIZE - 1 && col < BOARD_SIZE - 1 && board[row + 1][col + 1].isFlagged) {
+    if (row < BOARD_SIZE - 1 && col < BOARD_SIZE - 1 && isFlagged(row + 1, col + 1)) {
         numSurroundingFlags++
     }
-    if (col > 0 && board[row][col - 1].isFlagged) {
+    if (col > 0 && isFlagged(row, col - 1)) {
         numSurroundingFlags++
     }
-    if (col < BOARD_SIZE - 1 && board[row][col + 1].isFlagged) {
+    if (col < BOARD_SIZE - 1 && isFlagged(row, col + 1)) {
         numSurroundingFlags++
     }
     return numSurroundingFlags

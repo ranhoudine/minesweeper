@@ -43,20 +43,20 @@ export default function Game({ boardSize, numberOfMines }) {
     }, [isGameOver, numOfRevealedTiles, force])
 
     const rightClickHandler = (buttonIndex) => {
-        let [i, j] = get2DIndex(buttonIndex, boardSize)
-        if (!gameArray[i][j].isRevealed) {
-            gameArray[i][j].isFlagged = !gameArray[i][j].isFlagged
+        let [row, col] = get2DIndex(buttonIndex, boardSize)
+        if (!gameArray[row][col].isRevealed) {
+            gameArray[row][col].isFlagged = !gameArray[row][col].isFlagged
             const nextGameArray = gameArray.map(x => x) // copying gameArray in order to trigger a new render
             setGameArray(nextGameArray)
         }
     }
     const leftClickHandler = (buttonIndex) => {
-        let [i, j] = get2DIndex(buttonIndex, boardSize);
+        let [row, col] = get2DIndex(buttonIndex, boardSize);
         if (isGameOver) {
             return
         }
         else {
-            revealTile(gameArray, i, j)
+            revealTile(gameArray, row, col)
         }
     }
 
@@ -91,10 +91,11 @@ export default function Game({ boardSize, numberOfMines }) {
             <p>{endGameMessage}</p>
             {isGameOver && didPlayerWin
                 ?
-                <div className='SaveScore' onClick={() => navigate('/add-highscore', {
+                <div className="SaveScore" onClick={() => navigate('/add-highscore', {
                     replace: true,
                     state: { time }
-                })}>Save Score</div>
+                })}
+                >Save Score</div>
                 :
                 ''
             }
@@ -107,7 +108,7 @@ export default function Game({ boardSize, numberOfMines }) {
             setIsGameOver(true)
             return
         }
-        const [nextGameArray, totalRevealedTiles] = revealNeighboringTiles(gameArray, row, col)
+        const totalRevealedTiles = revealNeighboringTiles(gameArray, row, col)
         setNumOfRevealedTiles(totalRevealedTiles)
         
     }
@@ -181,9 +182,10 @@ function getRandomIndices(size, numOfMines) {
 }
 
 function setSurroundingMines(board, boardSize) {
-    for (let t = 0; t < boardSize ** 2; t++) {
-        let [i, j] = get2DIndex(t, boardSize)
-        board[i][j].numSurroundingMines = calculateSurroundingMines(board, t)
+    const totalTilesInBoard = boardSize ** 2
+    for (let t = 0; t < totalTilesInBoard; t++) {
+        let [row, col] = get2DIndex(t, boardSize)
+        board[row][col].numSurroundingMines = calculateSurroundingMines(board, t)
     }
 }
 
