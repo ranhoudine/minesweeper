@@ -2,9 +2,11 @@ import './styles/AddHighscore.css';
 import { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
+import {getServiceURL} from '../../utils/utils'
+
 export default function AddHighscorePage() {
     const [errorMessage, setErrorMessage] = useState('');
-    const baseURL = 'http://localhost:3001';
+    const baseURL = getServiceURL();
     const navigate = useNavigate();
     const { state } = useLocation();
     const time = state.time;

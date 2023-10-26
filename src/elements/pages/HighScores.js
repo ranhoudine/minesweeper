@@ -1,12 +1,9 @@
 import './styles/Highscores.css'
 import axios from 'axios'
 import { useEffect, useState } from 'react'
-import { getTimeString } from '../../utils/utils'
+import { getTimeString, getServiceURL } from '../../utils/utils'
 
-function getServiceURL(){
-    const serviceURL = process.env.NODE_ENV === 'production' ? 'https://minesweeper-server.onrender.com' : 'http://localhost:3001'
-    return serviceURL
-}
+
 export default function Highscores() {
     const [highscores, setHighscores] = useState(null)
     const [errorMessage, setErrorMessage] = useState('')
