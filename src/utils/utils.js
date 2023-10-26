@@ -14,4 +14,4 @@ function getServiceURL(){
     return serviceURL
 }
 
-export {getTimeString};
+export {getTimeString, getServiceURL};
