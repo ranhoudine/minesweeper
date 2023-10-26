@@ -3,14 +3,15 @@ import Stopwatch from './Stopwatch';
 import AddHighscore from './pages/AddHighscore'
 import './styles/Game.css'
 import { useEffect, useState } from 'react';
-import { revealNeighboringTiles, get2DIndex, calculateSurroundingMines } from '../utils/ArrayFunctions';
+import { revealNeighboringTiles, get2DIndex, calculateSurroundingMines, get1DIndex, calculateSurroundingFlags } from '../utils/ArrayFunctions';
 import { useNavigate } from 'react-router-dom';
 
-
+let totalTilesRevealed = 0
 
 export default function Game({ boardSize, numberOfMines }) {
 
     // state related constants
+    const [force, setForce] = useState(false);
     const [isGameOver, setIsGameOver] = useState(false);
     const [didPlayerWin, setDidPlayerWin] = useState(false);
     const [gameArray, setGameArray] = useState(initializeBoard(boardSize, numberOfMines, boardSize));
@@ -32,12 +33,6 @@ export default function Game({ boardSize, numberOfMines }) {
     }
 
     useEffect(() => {
-        if (isGameOver && !didPlayerWin) {
-            navigate('/highscores');
-        }
-    }, [])
-
-    useEffect(() => {
         if (isGameOver) {
             doGameOver()
         }
@@ -45,21 +40,31 @@ export default function Game({ boardSize, numberOfMines }) {
             setDidPlayerWin(true);
             setIsGameOver(true);
         }
-    }, [numOfRevealedTiles, isGameOver])
+    }, [isGameOver, numOfRevealedTiles, force])
 
+    const rightClickHandler = (buttonIndex) => {
+        let [i, j] = get2DIndex(buttonIndex, boardSize)
+        if (!gameArray[i][j].isRevealed) {
+            gameArray[i][j].isFlagged = !gameArray[i][j].isFlagged
+            const nextGameArray = gameArray.map(x => x) // copying gameArray in order to trigger a new render
+            setGameArray(nextGameArray)
+        }
+    }
     const leftClickHandler = (buttonIndex) => {
         let [i, j] = get2DIndex(buttonIndex, boardSize);
-        if (isGameOver || gameArray[i][j].isRevealed) {
+        if (isGameOver) {
             return
         }
-        if (gameArray[i][j].hasMine) {
-            gameArray[i][j].isRevealed = true;
-            setIsGameOver(true);
-        }
         else {
-            const [nextGameArray, numberOfNewlyRevealedTiles] = revealNeighboringTiles(gameArray, i, j);
-            setGameArray(nextGameArray)
-            setNumOfRevealedTiles(numOfRevealedTiles + numberOfNewlyRevealedTiles);
+            revealTile(gameArray, i, j)
+        }
+    }
+
+    const bothButtonsHandler = (buttonIndex) => {
+        let [row, col] = get2DIndex(buttonIndex, boardSize)
+        const numSurroundingFlags = calculateSurroundingFlags(gameArray, buttonIndex)
+        if (numSurroundingFlags === gameArray[row][col].numSurroundingMines) {
+            revealSurroundingTiles(gameArray, row, col)
         }
     }
     const doGameOver = () => {
@@ -78,7 +83,9 @@ export default function Game({ boardSize, numberOfMines }) {
                 numOfMines={numberOfMines}
                 leftClickHandler={leftClickHandler}
                 gameArray={gameArray}
-                isGameOver={isGameOver}>
+                isGameOver={isGameOver}
+                rightClickHandler={rightClickHandler}
+                bothButtonsHandler={bothButtonsHandler}>
             </Board>
             <Stopwatch isActive={!isGameOver} handleStopTime={handleStopTime}></Stopwatch>
             <p>{endGameMessage}</p>
@@ -92,7 +99,49 @@ export default function Game({ boardSize, numberOfMines }) {
                 ''
             }
         </div>
-    );
+    )
+
+    function revealTile(gameArray, row, col) {
+        if (gameArray[row][col].hasMine) {
+            gameArray[row][col].isRevealed = true
+            setIsGameOver(true)
+            return
+        }
+        const [nextGameArray, totalRevealedTiles] = revealNeighboringTiles(gameArray, row, col)
+        setNumOfRevealedTiles(totalRevealedTiles)
+        
+    }
+
+    function revealSurroundingTiles(gameArray, row, col) {
+        const shouldRevealTile = (row, col) => {
+            return !gameArray[row][col].isRevealed && !gameArray[row][col].isFlagged
+        }
+
+        if (row > 0 && col > 0 && shouldRevealTile(row - 1, col - 1)) {
+            revealTile(gameArray, row - 1, col - 1)
+        }
+        if (row > 0 && shouldRevealTile(row - 1, col)) {
+            revealTile(gameArray, row - 1, col)
+        }
+        if (row > 0 && col < boardSize - 1 && shouldRevealTile(row - 1, col + 1)) {
+            revealTile(gameArray, row - 1, col + 1)
+        }
+        if (row < boardSize - 1 && col > 0 && shouldRevealTile(row + 1, col - 1)) {
+            revealTile(gameArray, row + 1, col - 1)
+        }
+        if (row < boardSize - 1 && shouldRevealTile(row + 1, col)) {
+            revealTile(gameArray, row + 1, col)
+        }
+        if (row < boardSize - 1 && col < boardSize - 1 && shouldRevealTile(row + 1, col + 1)) {
+            revealTile(gameArray, row + 1, col + 1)
+        }
+        if (col > 0 && shouldRevealTile(row, col - 1)) {
+            revealTile(gameArray, row, col - 1)
+        }
+        if (col < boardSize - 1 && shouldRevealTile(row, col + 1)) {
+            revealTile(gameArray, row, col + 1)
+        }
+    }
 }
 
 
@@ -102,7 +151,7 @@ function initializeBoard(size, numOfMines, boardSize) {
     for (let i = 0; i < size; i++) {
         let row = [];
         for (let j = 0; j < size; j++) {
-            row[j] = { isRevealed: false, hasMine: false, index: i * size + j };
+            row[j] = { isRevealed: false, hasMine: false, index: get1DIndex(i, j, boardSize), isFlagged: false };
         }
         board[i] = row;
     }
@@ -134,8 +183,10 @@ function getRandomIndices(size, numOfMines) {
 function setSurroundingMines(board, boardSize) {
     for (let t = 0; t < boardSize ** 2; t++) {
         let [i, j] = get2DIndex(t, boardSize)
-        board[i][j].surroundingMines = calculateSurroundingMines(board, t)
+        board[i][j].numSurroundingMines = calculateSurroundingMines(board, t)
     }
 }
+
+
 function doGameOver() { }
 export { Game }

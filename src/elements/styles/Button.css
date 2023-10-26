@@ -1,8 +1,9 @@
 .Button {
-    height: 20px;
-    width: 20px;
-    text-align: center;
+    height: 25px;
+    width: 25px;
+    align-items: center;
     color: rgb(134, 182, 241);
     font-size: 12px;
+    cursor: default;
 }
 

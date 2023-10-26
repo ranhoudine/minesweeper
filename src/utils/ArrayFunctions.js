@@ -7,7 +7,7 @@ class ArrayCell {
         this.col = col
     }
 }
-
+let totalRevealedTiles = 0
 function createKey(i, j) {
     return i.toString() + ',' + j.toString();
 }
@@ -17,7 +17,7 @@ function revealNeighboringTiles(board, i, j) {
         const key = createKey(i, j);
         return history[key];
     }
-    const shouldStepInTile = (row, col) => {return !board[row][col].hasMine && !board[row][col].isRevealed && !enqueuedAlready(row, col);}
+    const shouldStepInTile = (row, col) => { return !board[row][col].hasMine && !board[row][col].isRevealed && !enqueuedAlready(row, col) }
     const step = (row, col) => {
         q.enqueue(new ArrayCell(row, col));
         history[createKey(row, col)] = true;
@@ -34,7 +34,7 @@ function revealNeighboringTiles(board, i, j) {
         let col = currentNode.col
         board[row][col].isRevealed = true
         numberOfRevealedTiles++;
-        if (board[row][col].surroundingMines > 0) {
+        if (board[row][col].numSurroundingMines > 0) {
             continue
         }
         if (row > 0) {
@@ -67,164 +67,73 @@ function revealNeighboringTiles(board, i, j) {
         }
 
     }
-    return [board, numberOfRevealedTiles]
+    totalRevealedTiles += numberOfRevealedTiles
+
+    return [board, totalRevealedTiles]
 
 
 
 }
 
 function calculateSurroundingMines(board, buttonIndex) {
-    let [i, j] = get2DIndex(buttonIndex, BOARD_SIZE);
-    let numSurroundingMines = 0;
-    if (i === BOARD_SIZE - 1 && j === BOARD_SIZE - 1) { // bottom right corner
-        if (board[i - 1][j - 1].hasMine) {
-            numSurroundingMines++;
-        }
-        if (board[i - 1][j].hasMine) {
-            numSurroundingMines++;
-        }
-        if (board[i][j - 1].hasMine) {
-            numSurroundingMines++;
-        }
-        return numSurroundingMines;
+    let [row, col] = get2DIndex(buttonIndex, BOARD_SIZE)
+    let numSurroundingMines = 0
+    if (row > 0 && col > 0 && board[row - 1][col - 1].hasMine) {
+        numSurroundingMines++
     }
-    if (i === 0 && j === BOARD_SIZE - 1) { // top right corner
-        if (board[i + 1][j].hasMine) {
-            numSurroundingMines++;
-        }
-        if (board[i + 1][j - 1].hasMine) {
-            numSurroundingMines++;
-        }
-        if (board[i][j - 1].hasMine) {
-            numSurroundingMines++;
-        }
-        return numSurroundingMines;
+    if (row > 0 && board[row - 1][col].hasMine) {
+        numSurroundingMines++
     }
-    if (i === 0 && j === 0) { // top left corner
-        if (board[i + 1][j].hasMine) {
-            numSurroundingMines++;
-        }
-        if (board[i + 1][j + 1].hasMine) {
-            numSurroundingMines++;
-        }
-        if (board[i][j + 1].hasMine) {
-            numSurroundingMines++;
-        }
-        return numSurroundingMines;
+    if (row > 0 && col < BOARD_SIZE - 1 && board[row - 1][col + 1].hasMine) {
+        numSurroundingMines++
     }
-    if (i === BOARD_SIZE - 1 && j === 0) { // bottom left corner
-        if (board[i - 1][j].hasMine) {
-            numSurroundingMines++;
-        }
-        if (board[i - 1][j + 1].hasMine) {
-            numSurroundingMines++;
-        }
-        if (board[i][j + 1].hasMine) {
-            numSurroundingMines++;
-        }
-        return numSurroundingMines;
+    if (row < BOARD_SIZE - 1 && col > 0 && board[row + 1][col - 1].hasMine) {
+        numSurroundingMines++
     }
-    if (j === BOARD_SIZE - 1) { // right column
-        if (board[i - 1][j].hasMine) {
-            numSurroundingMines++;
-        }
-        if (board[i - 1][j - 1].hasMine) {
-            numSurroundingMines++;
-        }
-        if (board[i][j - 1].hasMine) {
-            numSurroundingMines++;
-        }
-        if (board[i + 1][j - 1].hasMine) {
-            numSurroundingMines++;
-        }
-        if (board[i + 1][j].hasMine) {
-            numSurroundingMines++;
-        }
-        return numSurroundingMines;
+    if (row < BOARD_SIZE - 1 && board[row + 1][col].hasMine) {
+        numSurroundingMines++
     }
-    if (j === 0) { // left column
-        if (board[i - 1][j].hasMine) {
-            numSurroundingMines++;
-        }
-        if (board[i - 1][j + 1].hasMine) {
-            numSurroundingMines++;
-        }
-        if (board[i][j + 1].hasMine) {
-            numSurroundingMines++;
-        }
-        if (board[i + 1][j + 1].hasMine) {
-            numSurroundingMines++;
-        }
-        if (board[i + 1][j].hasMine) {
-            numSurroundingMines++;
-        }
-        return numSurroundingMines;
+    if (row < BOARD_SIZE - 1 && col < BOARD_SIZE - 1 && board[row + 1][col + 1].hasMine) {
+        numSurroundingMines++
     }
-    if (i === BOARD_SIZE - 1) { // bottom row
-        if (board[i - 1][j].hasMine) {
-            numSurroundingMines++;
-        }
-        if (board[i - 1][j - 1].hasMine) {
-            numSurroundingMines++;
-        }
-        if (board[i - 1][j + 1].hasMine) {
-            numSurroundingMines++;
-        }
-        if (board[i][j - 1].hasMine) {
-            numSurroundingMines++;
-        }
-        if (board[i][j + 1].hasMine) {
-            numSurroundingMines++;
-        }
-        return numSurroundingMines;
+    if (col > 0 && board[row][col - 1].hasMine) {
+        numSurroundingMines++
     }
-    if (i === 0) { // top row
-        if (board[i][j + 1].hasMine) {
-            numSurroundingMines++;
-        }
-        if (board[i][j - 1].hasMine) {
-            numSurroundingMines++;
-        }
-        if (board[i + 1][j - 1].hasMine) {
-            numSurroundingMines++;
-        }
-        if (board[i + 1][j + 1].hasMine) {
-            numSurroundingMines++;
-        }
-        if (board[i + 1][j].hasMine) {
-            numSurroundingMines++;
-        }
-        return numSurroundingMines;
+    if (col < BOARD_SIZE - 1 && board[row][col + 1].hasMine) {
+        numSurroundingMines++
     }
-    else { // rest of board
-        if (board[i][j + 1].hasMine) {
-            numSurroundingMines++;
-        }
-        if (board[i][j - 1].hasMine) {
-            numSurroundingMines++;
-        }
-        if (board[i + 1][j].hasMine) {
-            numSurroundingMines++;
-        }
-        if (board[i - 1][j].hasMine) {
-            numSurroundingMines++;
-        }
-        if (board[i + 1][j + 1].hasMine) {
-            numSurroundingMines++;
-        }
-        if (board[i + 1][j - 1].hasMine) {
-            numSurroundingMines++;
-        }
-        if (board[i - 1][j + 1].hasMine) {
-            numSurroundingMines++;
-        }
-        if (board[i - 1][j - 1].hasMine) {
-            numSurroundingMines++;
-        }
-        return numSurroundingMines;
-    }
+    return numSurroundingMines
 }
 
+function calculateSurroundingFlags(board, buttonIndex) {
+    let [row, col] = get2DIndex(buttonIndex, BOARD_SIZE)
+    let numSurroundingFlags = 0
+    if (row > 0 && col > 0 && board[row - 1][col - 1].isFlagged) {
+        numSurroundingFlags++
+    }
+    if (row > 0 && board[row - 1][col].isFlagged) {
+        numSurroundingFlags++
+    }
+    if (row > 0 && col < BOARD_SIZE - 1 && board[row - 1][col + 1].isFlagged) {
+        numSurroundingFlags++
+    }
+    if (row < BOARD_SIZE - 1 && col > 0 && board[row + 1][col - 1].isFlagged) {
+        numSurroundingFlags++
+    }
+    if (row < BOARD_SIZE - 1 && board[row + 1][col].isFlagged) {
+        numSurroundingFlags++
+    }
+    if (row < BOARD_SIZE - 1 && col < BOARD_SIZE - 1 && board[row + 1][col + 1].isFlagged) {
+        numSurroundingFlags++
+    }
+    if (col > 0 && board[row][col - 1].isFlagged) {
+        numSurroundingFlags++
+    }
+    if (col < BOARD_SIZE - 1 && board[row][col + 1].isFlagged) {
+        numSurroundingFlags++
+    }
+    return numSurroundingFlags
+}
 
 function get2DIndex(buttonIndex, rowLength) {
     let row = Math.floor(buttonIndex / rowLength);
@@ -232,4 +141,8 @@ function get2DIndex(buttonIndex, rowLength) {
     return [row, indexInRow];
 }
 
-export { revealNeighboringTiles, calculateSurroundingMines, get2DIndex };
+function get1DIndex(row, col, rowLength) {
+    return rowLength * row + col;
+}
+
+export { revealNeighboringTiles, calculateSurroundingMines, get2DIndex, get1DIndex, calculateSurroundingFlags };

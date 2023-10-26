@@ -8,7 +8,7 @@ import './App.css'
 import {BrowserRouter, Routes, Route} from 'react-router-dom'
 
 const BOARD_SIZE = 20;
-const NUMBER_OF_MINES = 60;
+const NUMBER_OF_MINES = 30;
 export default function App() {
 
 
